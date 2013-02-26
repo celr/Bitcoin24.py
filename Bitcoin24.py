@@ -27,7 +27,6 @@ class Bitcoin24:
         params['user'] = self.username
         params['key'] = self.apiKey
         urlParams = urllib.urlencode(params)
-        print urlParams
         self.__connection.request('POST', self.apiUri, urlParams)
         return self.__connection.getresponse()
         
