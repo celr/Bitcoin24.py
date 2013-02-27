@@ -30,8 +30,10 @@ class Bitcoin24:
         if (public == False):
             params['user'] = self.username
             params['key'] = self.apiKey
+            
+        headers = {'Content-type': 'application/x-www-form-urlencoded', 'Accept': 'text/plain'}
         urlParams = urllib.urlencode(params)
-        self.__connection.request('POST', uri, urlParams)
+        self.__connection.request('POST', uri, urlParams, headers)
         return self.__connection.getresponse()
         
     # Makes request to the API
