@@ -8,7 +8,7 @@ import json
 # Donate: 1Cw95xdqcPYyHKHr2TcXC1n7FBcdZDNsNV
 class Bitcoin24:
     # Constructor
-    def __init__(self, apiKey, username):
+    def __init__(self, apiKey=None, username=None):
         self.username = username
         self.apiKey = apiKey
         self.apiHost = 'bitcoin-24.com'
@@ -23,11 +23,15 @@ class Bitcoin24:
             self.__connected = True
     
     # Makes HTTPS request
-    def __makeRequest(self, params):
-        params['user'] = self.username
-        params['key'] = self.apiKey
+    def __makeRequest(self, params, public=False, uri=None):
+        if (uri == None):
+            uri = self.apiUri
+            
+        if (public == False):
+            params['user'] = self.username
+            params['key'] = self.apiKey
         urlParams = urllib.urlencode(params)
-        self.__connection.request('POST', self.apiUri, urlParams)
+        self.__connection.request('POST', uri, urlParams)
         return self.__connection.getresponse()
         
     # Makes request to the API
@@ -58,4 +62,17 @@ class Bitcoin24:
         return self.__makeApiRequest('sell_btc', {'amount': amount, 'price': price, 'cur': currency })     
      
     def withdrawBitcoin(self, amount, address):
-        return self.__makeApiRequest('sell_btc', {'amount': amount, 'address': address })      
+        return self.__makeApiRequest('sell_btc', {'amount': amount, 'address': address })
+
+    # Trades and orderbook
+    def getTrades(self, currency='EUR', sinceId=0):
+        self.__connect()
+        requestUri = '/api/' + currency + '/trades.json' 
+        response = self.__makeRequest({'since': sinceId}, True, requestUri)
+        return json.load(response)
+        
+    def getOrderbook(self, currency='EUR'):
+        self.__connect()
+        requestUri = '/api/' + currency + '/orderbook.json' 
+        response = self.__makeRequest({}, True, requestUri)
+        return json.load(response)
